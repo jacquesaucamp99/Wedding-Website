@@ -1,0 +1,429 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+  --paper: #f8f6f2;
+  --paper-dark: #ece6dc;
+  --sky: #dcecf5;
+  --ocean: #7ea9bb;
+  --deep: #556a75;
+  --gold: #d8c8aa;
+  --text: #4e5c66;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--paper);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+/* Make the page use a fixed left column and a scrollable right column */
+html, body {
+  height: 100%;
+}
+
+body {
+  overflow: hidden; /* only the right panel scrolls */
+}
+
+.site-split {
+  min-height: 100vh;
+}
+
+.left-fixed {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 55%;
+  background: linear-gradient(rgba(0,0,0,0.18), rgba(0,0,0,0.35)), url('../assets/images/hero.jpg') center/cover no-repeat;
+  background-position: 50% 70%; /* nudge focal point (X% Y%) */
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  padding: 60px;
+  color: white;
+  transition: background-image 400ms ease, opacity 300ms ease;
+}
+
+.left-fixed .left-overlay {
+  position: relative;
+  z-index: 2;
+}
+
+.right-scroll {
+  margin-left: 55%;
+  height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  z-index: 2;
+  background: transparent;
+}
+
+/* Ensure each right-side section can occupy viewport height so image swaps are noticeable */
+.right-scroll section,
+.right-scroll footer {
+  min-height: 100vh;
+}
+
+/* Mobile image block (inserted by JS) - hidden by default */
+.mobile-image {
+  display: none;
+  width: 100%;
+  position: relative;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.mobile-image .mobile-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12%;
+  color: white;
+  text-align: center;
+  padding: 0 20px;
+  z-index: 2;
+}
+
+.mobile-image .mobile-overlay h1 {
+  font-size: 2.6rem;
+  margin: 6px 0 4px;
+}
+
+.mobile-image.mobile-hero {
+  min-height: 100vh;
+}
+
+.mobile-image:not(.mobile-hero) {
+  min-height: 50vh;
+}
+
+/* Narrower left column for smaller screens */
+
+h1, h2, h3, h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+}
+
+.floating-nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(248,246,242,0.92);
+  backdrop-filter: blur(12px);
+  border-radius: 999px;
+  padding: 16px 28px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+.brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 18px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text);
+}
+
+.hero-layout {
+  display: grid;
+  grid-template-columns: 62% 38%;
+  min-height: 100vh;
+}
+
+.hero-photo {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+              url('../assets/images/hero.jpg') center center/cover no-repeat;
+  background-position: 50% 35%;
+}
+
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-copy {
+  position: absolute;
+  left: 70px;
+  bottom: 70px;
+  color: white;
+}
+
+.hero-copy h1 {
+  font-size: 6rem;
+  line-height: 0.9;
+  margin: 15px 0;
+}
+
+.hero-date,
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 2rem;
+}
+
+.hero-hashtag {
+  font-size: 1rem;
+  margin-top: -5px;
+  margin-left: 20px;
+}
+
+.hero-invitation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+  background: var(--paper);
+}
+
+.invitation-arch {
+  width: 100%;
+  max-width: 430px;
+  min-height: 760px;
+  background: linear-gradient(to bottom, var(--sky), white);
+  border: 2px solid var(--gold);
+  border-radius: 260px 260px 0 0;
+  padding: 80px 50px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 0.8rem;
+}
+
+.invitation-arch h2 {
+  font-size: 4rem;
+}
+
+.amp {
+  font-size: 3rem;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.divider {
+  height: 1px;
+  width: 70%;
+  margin: 30px auto;
+  background: var(--gold);
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 14px 34px;
+  border: 1px solid var(--deep);
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--deep);
+  transition: 0.25s;
+}
+
+.btn:hover {
+  background: var(--deep);
+  color: white;
+}
+
+.split-section {
+  display: grid;
+  grid-template-columns: 55% 45%;
+  min-height: 100vh;
+}
+
+.image-panel {
+  background: url('../assets/images/placeholder.jpg') center center/cover no-repeat;
+}
+
+.content-panel {
+  padding: 120px 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.content-panel h2 {
+  font-size: 4.5rem;
+  margin-bottom: 40px;
+}
+
+.timeline-item,
+.info-card {
+  padding: 28px 0;
+  border-top: 1px solid #d8d8d8;
+}
+
+.timeline-item h4,
+.info-card h3 {
+  font-size: 2rem;
+  margin: 10px 0;
+}
+
+.weekend-intro {
+  padding: 140px 30px;
+  text-align: center;
+  background: linear-gradient(to bottom, var(--paper), var(--sky));
+}
+
+.weekend-intro h2 {
+  font-size: 5rem;
+  margin-bottom: 20px;
+}
+
+.weekend-intro p {
+  max-width: 700px;
+  margin: auto;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.gallery-placeholder {
+  height: 240px;
+  background: var(--sky);
+  border-radius: 14px;
+}
+
+.faq-section {
+  max-width: 1000px;
+  margin: auto;
+  padding: 120px 30px;
+}
+
+.faq-section h2 {
+  font-size: 4rem;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.details,
+details {
+  background: white;
+  padding: 24px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.04);
+}
+
+summary {
+  cursor: pointer;
+}
+
+footer {
+  padding: 60px;
+  text-align: center;
+  background: var(--paper-dark);
+}
+
+@media (max-width: 1100px) {
+  .hero-layout,
+  .split-section {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack the left panel and right content on small screens */
+  body {
+    overflow: auto;
+  }
+
+  .left-fixed {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 30px;
+  }
+
+
+  /* On small screens we hide the fixed left column and instead show stacked
+     mobile image blocks (inserted by JS) above each section. */
+  .left-fixed {
+    display: none;
+  }
+
+  .mobile-image {
+    display: block;
+    min-height: 100vh; /* full viewport image for each section on mobile */
+    background-position: 50% 30%;
+  }
+
+  .mobile-image.mobile-hero {
+    min-height: 100vh;
+  }
+
+  .left-fixed .left-overlay {
+    opacity: 1 !important; /* fallback in case left panel shows */
+    position: relative;
+    text-align: center;
+    transform: translateY(0);
+    margin: 0 auto;
+    max-width: 90%;
+  }
+
+  .left-fixed .left-overlay h1 {
+    font-size: 3rem;
+    line-height: 1.02;
+    margin: 10px 0 6px;
+  }
+
+  .left-fixed .left-overlay .hero-date,
+  .left-fixed .left-overlay .hero-location {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+  }
+
+  .right-scroll {
+    margin-left: 0;
+    height: auto;
+    overflow: visible;
+  }
+
+  .hero-photo {
+    min-height: 70vh;
+  }
+
+  .hero-copy h1 {
+    font-size: 4rem;
+  }
+
+  .content-panel {
+    padding: 70px 30px;
+  }
+
+  .floating-nav {
+    display: none;
+  }
+}
