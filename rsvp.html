@@ -1,14 +1,137 @@
-<html><head><link rel='stylesheet' href='css/main.css'></head><body>
-<section class='section'>
-<h2>RSVP</h2>
-<form name='wedding-rsvp' method='POST' data-netlify='true'>
-<input type='hidden' name='form-name' value='wedding-rsvp'>
-<input placeholder='Full Name' name='name'>
-<input placeholder='Email' name='email'>
-<select name='attendance'><option>Attending?</option><option>Yes</option><option>No</option></select>
-<input placeholder='Number of Guests' name='guests'>
-<textarea placeholder='Dietary Requirements'></textarea>
-<textarea placeholder='Song Request'></textarea>
-<button class='btn'>Submit RSVP</button>
-</form>
-</section></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSVP | Anaïs &amp; Jacques</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&amp;family=Manrope:wght@300;400;500&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="rsvp-page">
+    <a class="rsvp-home-link" href="index.html" aria-label="Back to wedding website">
+        <span aria-hidden="true">←</span> Back to website
+    </a>
+
+    <main class="rsvp-layout">
+        <aside class="rsvp-visual">
+            <div class="rsvp-visual-copy">
+                <p class="eyebrow">26 – 28 Maart 2027</p>
+                <h1>Anaïs <span>&amp;</span> Jacques</h1>
+                <p>Grootvlei Guest Farm · Lambertsbaai</p>
+            </div>
+        </aside>
+
+        <section class="rsvp-form-panel">
+            <div class="rsvp-progress" aria-label="Form progress">
+                <span id="progressLabel">Gas 1 · Vraag 1 van 8</span>
+                <div class="progress-track" aria-hidden="true">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+            </div>
+
+            <form id="rsvpForm" class="rsvp-form" name="wedding-rsvp" method="POST" data-netlify="true" novalidate>
+                <input type="hidden" name="form-name" value="wedding-rsvp">
+                <input id="partyRsvps" type="hidden" name="party-rsvps" value="">
+                <input id="partySize" type="hidden" name="party-size" value="1">
+
+                <div class="rsvp-step is-active" data-step>
+                    <p class="question-number">Kom ons begin</p>
+                    <label for="guestName">Naam en van</label>
+                    <p class="question-help">Vul asseblief jou volle naam en van in.</p>
+                    <input id="guestName" name="name" type="text" autocomplete="name" placeholder="Volle naam en van" required>
+                </div>
+
+                <div class="rsvp-step" data-step>
+                    <p class="question-number">Kontakbesonderhede</p>
+                    <label for="guestEmail">Wat is jou e-pos adres?</label>
+                    <p class="question-help">Ons sal dit slegs vir troue opdaterings gebruik.</p>
+                    <input id="guestEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+                </div>
+
+                <fieldset class="rsvp-step" data-step>
+                    <legend>Sien ons jou daar?</legend>
+                    <p class="question-help">Sal jy ons trou naweek van 26 - 28 Maart 2027 kan bywoon? </p>
+                    <div class="choice-grid">
+                        <label class="choice-card">
+                            <input type="radio" name="attendance" value="Yes, I will be there" required>
+                            <span>Ja</span>
+                        </label>
+                        <label class="choice-card">
+                            <input type="radio" name="attendance" value="No, I cannot attend" required>
+                            <span>Nee</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="rsvp-step" data-step data-decline-step>
+                    <label for="coupleNote">Wil jy 'n nota los vir die paartjie?</label>
+                    <p class="question-help">Hierdie vraag is opsioneel.</p>
+                    <textarea id="coupleNote" name="note-for-couple" rows="4" placeholder="Jou nota"></textarea>
+                </div>
+
+                <div class="rsvp-step" data-step data-attending-step>
+                    <label for="dietary">Dieetvereistes</label>
+                    <p class="question-help">Het jy enige dieetvereistes of allergieë?</p>
+                    <textarea id="dietary" name="dietary-requirements" rows="4" placeholder="Geen dieetvereistes"></textarea>
+                </div>
+
+                <div class="rsvp-step" data-step data-attending-step>
+                    <label for="transport">Shuttle diens</label>
+                    <p class="question-help">Indien daar n shuttle-service is vanaf die lughawe na die venue (en terug), sal julle daarvan wil gebruik maak? Indien daar genoeg belangstelling is, sal verdere reelings getref word met julle as julle "Ja" kies.</p>
+                    <select id="transport" name="transport" required>
+                        <option value="" selected disabled>Kies 'n opsie</option>
+                        <option value="Yes">Ja, asseblief</option>
+                        <option value="No">Nee, ek sal my eie vervoer organiseer</option>
+                        <option value="Maybe">Miskien — stuur asseblief meer inligting</option>
+                    </select>
+                </div>
+
+                <div class="rsvp-step" data-step data-attending-step>
+                    <label for="songRequest">Liedjie versoek</label>
+                    <p class="question-help">Het jy ’n liedjie wat jy graag op die dansvloer wil hoor?</p>
+                    <textarea id="songRequest" name="song-request" rows="4" placeholder="Kunstenaar en liedjie naam"></textarea>
+                </div>
+
+                <div class="rsvp-step" data-step data-attending-step>
+                    <label for="children">Kinders</label>
+                    <p class="question-help">Sal jy kinders saambring? Indien ja, hoeveel kinders en watter ouderdom?</p>
+                    <textarea id="children" name="children" rows="4" placeholder="Kinders - Jaar van geboorte"></textarea>
+                </div>
+
+                <fieldset class="rsvp-step" data-step data-attending-step data-party-step>
+                    <legend>Wil jy vir iemand anders RSVP?</legend>
+                    <p class="question-help">Jy kan nou dieselfde vrae vir die volgende persoon in jou party invul.</p>
+                    <div class="choice-grid">
+                        <label class="choice-card">
+                            <input id="addAnotherYes" type="radio" name="add-another-person" value="yes" required>
+                            <span>Ja, voeg nog iemand by</span>
+                        </label>
+                        <label class="choice-card">
+                            <input id="addAnotherNo" type="radio" name="add-another-person" value="no" required>
+                            <span>Nee, voltooi my RSVP</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="rsvp-actions">
+                    <button id="backButton" class="rsvp-button rsvp-button-secondary" type="button">Terug</button>
+                    <button id="nextButton" class="rsvp-button" type="button">Volgende</button>
+                    <button id="submitButton" class="rsvp-button" type="submit">Gaan voort</button>
+                </div>
+                <p id="formError" class="form-error" role="alert" aria-live="polite"></p>
+            </form>
+
+            <div id="rsvpSuccess" class="rsvp-success" hidden>
+                <p class="question-number">RSVP ontvang</p>
+                <h2>Baie dankie!</h2>
+                <p id="successMessage">Jou RSVP is suksesvol ingedien.</p>
+                <a class="rsvp-button" href="index.html">Terug na die webwerf</a>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/rsvp.js?v=4"></script>
+</body>
+</html>
