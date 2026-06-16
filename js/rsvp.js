@@ -176,6 +176,28 @@
       return;
     }
 
+    // Ensure the primary contact fields reflect the first guest (so Netlify shows a sensible top-level name/email)
+    const primary = completedGuests[0] || {};
+    const nameField = form.querySelector('input[name="name"]');
+    const emailField = form.querySelector('input[name="email"]');
+    if (nameField && primary.name) nameField.value = primary.name;
+    if (emailField && primary.email) emailField.value = primary.email;
+
+    // Inject hidden inputs for each guest so Netlify displays all party members separately
+    // Remove any previous injected fields first
+    Array.from(form.querySelectorAll('input[data-injected-guest]')).forEach(n => n.remove());
+    completedGuests.forEach((guest, idx) => {
+      Object.keys(guest).forEach(key => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        // use a clear naming convention: party_0_name, party_0_email, etc.
+        input.name = `party_${idx}_${key}`;
+        input.value = guest[key];
+        input.dataset.injectedGuest = 'true';
+        form.appendChild(input);
+      });
+    });
+
     submitButton.disabled = true;
     submitButton.textContent = 'Sending…';
 
