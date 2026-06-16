@@ -31,8 +31,12 @@
                 </div>
             </div>
 
-            <form id="rsvpForm" class="rsvp-form" name="wedding-rsvp" method="POST" data-netlify="true" novalidate>
+            <form id="rsvpForm" class="rsvp-form" name="wedding-rsvp" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" novalidate netlify>
                 <input type="hidden" name="form-name" value="wedding-rsvp">
+                <!-- honeypot field for bots; keep hidden from users -->
+                <div style="display:none">
+                    <label>Do not fill this field: <input name="bot-field" /></label>
+                </div>
                 <input id="partyRsvps" type="hidden" name="party-rsvps" value="">
                 <input id="partySize" type="hidden" name="party-size" value="1">
 
