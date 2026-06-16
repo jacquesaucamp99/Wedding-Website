@@ -77,23 +77,24 @@
             const w = probe.naturalWidth || probe.width;
             const h = probe.naturalHeight || probe.height;
             if (w && h) {
-              if (w / h >= 1) {
-                // landscape or square -> cover
-                el.style.backgroundSize = 'cover';
+              // Use cover for all images so they fill the block width.
+              el.style.backgroundSize = 'cover';
+              el.style.backgroundRepeat = 'no-repeat';
+              // For portrait images, shift focal point up slightly so subjects stay visible
+              if (w / h < 1) {
+                el.style.backgroundPosition = 'center 30%';
               } else {
-                // portrait -> contain so image fits vertically
-                el.style.backgroundSize = 'contain';
-                el.style.backgroundRepeat = 'no-repeat';
                 el.style.backgroundPosition = 'center center';
               }
             }
           } catch (e) {
             // fallback
             el.style.backgroundSize = 'cover';
+            el.style.backgroundPosition = 'center center';
           }
         };
         // in case of cached image where onload may not fire
-        probe.onerror = function () { el.style.backgroundSize = 'cover'; };
+        probe.onerror = function () { el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center center'; };
       })(bg, img, isHero);
 
       sec.parentNode.insertBefore(img, sec);
