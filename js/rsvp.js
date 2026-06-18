@@ -143,6 +143,8 @@
     if (partyTotalInput && keepPartyValue) partyTotalInput.value = keepPartyValue;
     // Hide any previously selected radio/choices and reset navigation to the first visible step
     submitButton.textContent = 'Gaan voort';
+    // ensure submit button is enabled for the next guest
+    submitButton.disabled = false;
     // Move to first visible step
     const route = getStepRoute();
     currentStep = steps.indexOf(route[0]);
