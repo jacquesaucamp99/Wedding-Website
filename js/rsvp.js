@@ -16,6 +16,8 @@
   const declineStep = form.querySelector('[data-decline-step]');
   const completedGuests = [];
   let currentStep = 0;
+  let partyTotalExpected = 1;
+  let partyLeaderName = '';
 
   function isDeclining() {
     const attendance = form.querySelector('input[name="attendance"]:checked');
@@ -94,11 +96,46 @@
   }
 
   function startNextGuest() {
+    // Reset most fields but preserve the party size and leader info if present
+    const partyTotalInput = form.querySelector('input[name="party-total"]');
+    const keepPartyValue = partyTotalInput ? partyTotalInput.value : '';
     form.reset();
+    if (partyTotalInput && keepPartyValue) partyTotalInput.value = keepPartyValue;
     submitButton.textContent = 'Gaan voort';
     currentStep = 0;
     updateStep();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function submitGuestToNetlify(guest, index) {
+    const params = new URLSearchParams();
+    params.append('form-name', 'wedding-rsvp');
+    // party metadata
+    params.append('party', partyLeaderName || guest.name || '');
+    params.append('party-guest', `${index} of ${partyTotalExpected}`);
+    params.append('party-size', String(partyTotalExpected));
+
+    // primary contact fields
+    params.append('name', guest.name || '');
+    params.append('email', guest.email || '');
+
+    // include the rest of guest fields as structured entries
+    Object.keys(guest).forEach(key => {
+      params.append(`guests[0][${key}]`, guest[key] || '');
+    });
+
+    // include honeypot if present
+    const honeypot = form.querySelector('input[name="bot-field"]');
+    if (honeypot) params.append('bot-field', honeypot.value || '');
+
+    const resp = await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString()
+    });
+
+    if (!resp.ok) throw new Error(`Submission failed with status ${resp.status}`);
+    return resp;
   }
 
   function encodeFormData() {
@@ -157,17 +194,41 @@
     event.preventDefault();
     if (!validateCurrentStep()) return;
 
-    completedGuests.push(collectGuestAnswers());
+    const guest = collectGuestAnswers();
+    completedGuests.push(guest);
 
     const addAnother = form.querySelector('input[name="add-another-person"]:checked');
     const shouldAddAnother = steps[currentStep] !== declineStep &&
       addAnother && addAnother.value.toLowerCase() === 'yes';
 
-    if (shouldAddAnother) {
+    // Read party total (visible question) and set leader name if first guest
+    const partyTotalInput = form.querySelector('input[name="party-total"]');
+    if (partyTotalInput) partyTotalExpected = Math.max(1, parseInt(partyTotalInput.value, 10) || 1);
+    if (!partyLeaderName) partyLeaderName = completedGuests[0] && completedGuests[0].name ? completedGuests[0].name : '';
+
+    // If user wants to add another and we haven't reached the expected total, submit this guest now
+    if (shouldAddAnother && completedGuests.length < partyTotalExpected) {
+      // submit current guest in background with party metadata
+      try {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Sending…';
+        await submitGuestToNetlify(guest, completedGuests.length);
+      } catch (err) {
+        // rollback and show error
+        completedGuests.pop();
+        submitButton.disabled = false;
+        submitButton.textContent = 'Send RSVP';
+        formError.textContent = 'Ons kon nie jou RSVP stuur nie. Probeer asseblief weer.';
+        console.error(err);
+        return;
+      }
+
+      // prepare form for next guest but preserve party total
       startNextGuest();
       return;
     }
 
+    // Final guest: set party-rsvps and party-size for record (kept for compatibility)
     partyRsvps.value = JSON.stringify(completedGuests);
     partySize.value = String(completedGuests.length);
 
