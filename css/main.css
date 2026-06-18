@@ -547,6 +547,36 @@ h1, h2, h3, h4 {
   .timeline .event .event-body { max-width: 100%; }
 }
 
+/* Mobile: stack hashtags vertically and place countdown to the right of each hashtag */
+@media (max-width: 1100px) {
+  .hashtag-container { margin-top: 20px; }
+  .hashtag-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .hashtag {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    white-space: normal;
+    min-height: 36px;
+    font-size: 1.05rem;
+  }
+
+  .hashtag .countdown {
+    margin-left: 8px;
+    margin-top: 0;
+    font-size: 0.9rem;
+  }
+
+  .hashtag.greyed-out { opacity: 0.45; }
+}
+
 .event-body {
   padding: 12px 14px;
   /* keep content readable but avoid stark white */

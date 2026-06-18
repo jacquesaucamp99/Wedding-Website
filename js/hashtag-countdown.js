@@ -4,15 +4,19 @@
   const ceremonyTime = new Date(2027, 2, 27, 16, 0, 0); // 27 March 2027, 4:00 PM
   const morningAfterTime = new Date(2027, 2, 28, 8, 30, 0); // 28 March 2027, 8:30 AM
 
-  // Get DOM elements
-  const hashtagAmper = document.getElementById('hashtag-amper');
-  const hashtagAmptelik = document.getElementById('hashtag-amptelik');
-  const hashtagAltyd = document.getElementById('hashtag-altyd');
-  const countdownAmper = document.getElementById('countdown-amper');
-  const countdownCeremony = document.getElementById('countdown-ceremony');
-  const countdownAltyd = document.getElementById('countdown-altyd');
-
-  if (!hashtagAmper || !hashtagAmptelik || !hashtagAltyd) return;
+  // Helper: choose the first visible element for a given selector (handles cloned overlays)
+  function firstVisible(selector) {
+    const nodes = Array.from(document.querySelectorAll(selector));
+    for (const n of nodes) {
+      try {
+        const style = window.getComputedStyle(n);
+        if (style && style.display !== 'none' && style.visibility !== 'hidden' && n.offsetParent !== null) return n;
+      } catch (e) {
+        // ignore and continue
+      }
+    }
+    return nodes[0] || null;
+  }
 
   function formatCountdown(targetTime) {
     const now = new Date();
@@ -49,58 +53,45 @@
       activePhase = 2;
     }
 
-    // Reset all hashtags to greyed out
-    hashtagAmper.classList.add('greyed-out');
-    hashtagAmptelik.classList.add('greyed-out');
-    hashtagAltyd.classList.add('greyed-out');
+    // Find the visible elements for hashtags and countdowns (handles clones/injected mobile overlays)
+    const hashtagAmper = firstVisible('#hashtag-amper');
+    const hashtagAmptelik = firstVisible('#hashtag-amptelik');
+    const hashtagAltyd = firstVisible('#hashtag-altyd');
+    const countdownAmper = firstVisible('#countdown-amper');
+    const countdownCeremony = firstVisible('#countdown-ceremony');
+    const countdownAltyd = firstVisible('#countdown-altyd');
 
-    // Update countdown displays
+    // If hashtags aren't present yet, skip (will retry on next interval)
+    if (!hashtagAmper && !hashtagAmptelik && !hashtagAltyd) return;
+
+    // Reset all hashtags to greyed out where elements exist
+    [hashtagAmper, hashtagAmptelik, hashtagAltyd].forEach(h => { if (h) h.classList.add('greyed-out'); });
+
+    // Update countdown displays if elements found
     const countdownAmpValue = formatCountdown(oneWeekBeforeCeremony);
     const countdownCeremonyValue = formatCountdown(ceremonyTime);
     const countdownAltydValue = formatCountdown(morningAfterTime);
 
-    if (countdownAmpValue) {
-      countdownAmper.textContent = countdownAmpValue;
-    } else {
-      countdownAmper.textContent = '';
-    }
-
-    if (countdownCeremonyValue) {
-      countdownCeremony.textContent = countdownCeremonyValue;
-    } else {
-      countdownCeremony.textContent = '';
-    }
-
-    if (countdownAltydValue) {
-      countdownAltyd.textContent = countdownAltydValue;
-    } else {
-      countdownAltyd.textContent = '';
-    }
+    if (countdownAmper) countdownAmper.textContent = countdownAmpValue || '';
+    if (countdownCeremony) countdownCeremony.textContent = countdownCeremonyValue || '';
+    if (countdownAltyd) countdownAltyd.textContent = countdownAltydValue || '';
 
     // Set active phase based on current time
     switch (activePhase) {
       case 1:
-        // Before one week before: AmperAucamp is active
-        hashtagAmper.classList.remove('greyed-out');
+        if (hashtagAmper) hashtagAmper.classList.remove('greyed-out');
         break;
       case 2:
-        // Between one week before and ceremony: AmptelikAucamp is active
-        hashtagAmptelik.classList.remove('greyed-out');
+        if (hashtagAmptelik) hashtagAmptelik.classList.remove('greyed-out');
         break;
       case 3:
-        // Between ceremony and morning after: AltydAucamp is active
-        hashtagAltyd.classList.remove('greyed-out');
-        break;
       case 4:
-        // After morning after: AltydAucamp remains active
-        hashtagAltyd.classList.remove('greyed-out');
+        if (hashtagAltyd) hashtagAltyd.classList.remove('greyed-out');
         break;
     }
   }
 
-  // Initial update
+  // Run immediately and then every second
   updateHashtags();
-
-  // Update every second
   setInterval(updateHashtags, 1000);
 })();
