@@ -27,8 +27,8 @@
   function getStepRoute() {
     return steps.filter(step => {
       if (step.hasAttribute('data-decline-step')) return isDeclining();
-      // always show the party-size question for the first guest
-      if (step.hasAttribute('data-party-size-step')) return completedGuests.length === 0;
+      // always show the party-size question for the first guest (only if attending)
+      if (step.hasAttribute('data-party-size-step')) return completedGuests.length === 0 && !isDeclining();
       // show the add-another/person field only for the first guest AND when party total > 1
       if (step.hasAttribute('data-party-step')) {
         // must be attending to show this step
@@ -71,8 +71,10 @@
       // read current party total if present
       const partyTotalInput = form.querySelector('input[name="party-total"]');
       const total = partyTotalInput ? Math.max(1, parseInt(partyTotalInput.value, 10) || 1) : partyTotalExpected;
-      // if party has more than one and we still need to collect more guests, act as "continue for next person"
-      if (total > 1 && completedGuests.length < total) {
+      // remaining includes the current guest being filled
+      const remaining = Math.max(1, total - completedGuests.length);
+      // if more than one remaining, show continue; if this is the last person (remaining === 1), show submit
+      if (total > 1 && remaining > 1) {
         submitButton.textContent = 'Gaan voort';
         // change last step legend or question if available
         const legend = lastStep && lastStep.querySelector('legend');
