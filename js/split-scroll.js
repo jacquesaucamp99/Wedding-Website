@@ -14,7 +14,7 @@
 
   function createObserver() {
     const sections = Array.from(right.querySelectorAll('section[data-bg]'));
-    const options = { root: right, threshold: 0.55 };
+    const options = { root: right, threshold: 0.1 };
     io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {

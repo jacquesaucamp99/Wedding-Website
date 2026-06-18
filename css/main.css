@@ -203,6 +203,46 @@ h1, h2, h3, h4 {
   margin-left: 20px;
 }
 
+.hashtag-container {
+  margin-top: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.hashtag-group {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hashtag {
+  font-size: 1.2rem;
+  position: relative;
+  transition: opacity 400ms ease;
+  display: inline-block;
+  white-space: nowrap;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hashtag.greyed-out {
+  opacity: 0.4;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.countdown {
+  display: block;
+  font-size: 0.7rem;
+  margin-top: 4px;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
 .hero-invitation {
   display: flex;
   justify-content: center;
@@ -347,6 +387,11 @@ h1, h2, h3, h4 {
 
 #story {
   background: linear-gradient(180deg, #cab292 0%, #dcc8ae 48%, #eadfce 100%);
+  color: #44382f;
+}
+
+#kleredrag {
+  background: linear-gradient(180deg, #cab292 0%, #d5bfa0 44%, #e3d4c2 100%);
   color: #44382f;
 }
 
@@ -548,8 +593,7 @@ h1, h2, h3, h4 {
   width: 100%;
   max-width: 720px;
   height: auto;
-  aspect-ratio: 3/4;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 12px;
   border: 1px solid rgba(200,170,140,0.08);
   box-shadow: 0 10px 30px rgba(40,30,24,0.06);
@@ -564,7 +608,7 @@ h1, h2, h3, h4 {
   .dress-image {
     width: 84%;
     margin: 0 auto;
-    aspect-ratio: 3/4;
+    object-fit: contain;
   }
 }
 
