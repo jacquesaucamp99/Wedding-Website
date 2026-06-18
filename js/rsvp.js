@@ -27,24 +27,62 @@
   function getStepRoute() {
     return steps.filter(step => {
       if (step.hasAttribute('data-decline-step')) return isDeclining();
+      // always show the party-size question for the first guest
+      if (step.hasAttribute('data-party-size-step')) return completedGuests.length === 0;
+      // show the add-another/person field only for the first guest AND when party total > 1
+      if (step.hasAttribute('data-party-step')) {
+        // must be attending to show this step
+        if (isDeclining()) return false;
+        const partyTotalInput = form.querySelector('input[name="party-total"]');
+        const total = partyTotalInput ? Math.max(1, parseInt(partyTotalInput.value, 10) || 1) : partyTotalExpected;
+        return completedGuests.length === 0 && total > 1;
+      }
       if (step.hasAttribute('data-attending-step')) return !isDeclining();
       return true;
     });
   }
 
   function updateStep() {
+    const route = getStepRoute();
+
+    // If the currentStep is not visible in the route (because it's conditionally hidden),
+    // move the currentStep to the first visible step.
+    if (!route.includes(steps[currentStep])) {
+      currentStep = steps.indexOf(route[0]);
+    }
+
     steps.forEach((step, index) => {
-      step.classList.toggle('is-active', index === currentStep);
-      step.setAttribute('aria-hidden', index === currentStep ? 'false' : 'true');
+      const visible = route.includes(step);
+      const active = step === steps[currentStep];
+      step.classList.toggle('is-active', active);
+      step.classList.toggle('is-hidden', !visible);
+      step.setAttribute('aria-hidden', active ? 'false' : 'true');
     });
 
-    const route = getStepRoute();
     const routeIndex = route.indexOf(steps[currentStep]);
     const isFirst = routeIndex === 0;
     const isLast = routeIndex === route.length - 1;
     backButton.style.display = isFirst ? 'none' : 'inline-block';
     nextButton.style.display = isLast ? 'none' : 'inline-block';
     submitButton.style.display = isLast ? 'inline-block' : 'none';
+    // adjust submit button label and final-question text based on party flow
+    const lastStep = route[route.length - 1];
+    if (isLast) {
+      // read current party total if present
+      const partyTotalInput = form.querySelector('input[name="party-total"]');
+      const total = partyTotalInput ? Math.max(1, parseInt(partyTotalInput.value, 10) || 1) : partyTotalExpected;
+      // if party has more than one and we still need to collect more guests, act as "continue for next person"
+      if (total > 1 && completedGuests.length < total) {
+        submitButton.textContent = 'Gaan voort';
+        // change last step legend or question if available
+        const legend = lastStep && lastStep.querySelector('legend');
+        if (legend) legend.textContent = 'RSVP Vir die volgende persoon';
+      } else {
+        submitButton.textContent = 'Stuur RSVP';
+        const legend = lastStep && lastStep.querySelector('legend');
+        if (legend) legend.textContent = 'Voltooi RSVP?';
+      }
+    }
     progressLabel.textContent = `Gas ${completedGuests.length + 1} · Vraag ${routeIndex + 1} of ${route.length}`;
     progressBar.style.width = `${((routeIndex + 1) / route.length) * 100}%`;
     formError.textContent = '';
@@ -60,10 +98,10 @@
     if (!invalidControl) return true;
 
     if (invalidControl.type === 'radio') {
-      formError.textContent = 'Please choose an option before continuing.';
+      formError.textContent = 'Kies asseblief ’n opsie voordat jy voortgaan.';
     } else {
       invalidControl.reportValidity();
-      formError.textContent = 'Please complete this question before continuing.';
+      formError.textContent = 'Voltooi asseblief hierdie vraag voordat jy verder gaan.';
       invalidControl.focus();
     }
     return false;
@@ -101,8 +139,11 @@
     const keepPartyValue = partyTotalInput ? partyTotalInput.value : '';
     form.reset();
     if (partyTotalInput && keepPartyValue) partyTotalInput.value = keepPartyValue;
+    // Hide any previously selected radio/choices and reset navigation to the first visible step
     submitButton.textContent = 'Gaan voort';
-    currentStep = 0;
+    // Move to first visible step
+    const route = getStepRoute();
+    currentStep = steps.indexOf(route[0]);
     updateStep();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -115,13 +156,11 @@
     params.append('party-guest', `${index} of ${partyTotalExpected}`);
     params.append('party-size', String(partyTotalExpected));
 
-    // primary contact fields
-    params.append('name', guest.name || '');
-    params.append('email', guest.email || '');
-
-    // include the rest of guest fields as structured entries
+    // include all guest fields clearly so Netlify receives them
     Object.keys(guest).forEach(key => {
-      params.append(`guests[0][${key}]`, guest[key] || '');
+      // add a generic key and a unique per-guest key
+      params.append(key, guest[key] || '');
+      params.append(`guest_${index}_${key}`, guest[key] || '');
     });
 
     // include honeypot if present
@@ -198,12 +237,21 @@
     completedGuests.push(guest);
 
     const addAnother = form.querySelector('input[name="add-another-person"]:checked');
-    const shouldAddAnother = steps[currentStep] !== declineStep &&
-      addAnother && addAnother.value.toLowerCase() === 'yes';
 
-    // Read party total (visible question) and set leader name if first guest
+    // Determine the desired flow: if a party total > 1 was provided, enforce collecting that many RSVPs
     const partyTotalInput = form.querySelector('input[name="party-total"]');
     if (partyTotalInput) partyTotalExpected = Math.max(1, parseInt(partyTotalInput.value, 10) || 1);
+
+    let shouldAddAnother = false;
+    if (partyTotalExpected > 1) {
+      // If the party expects multiple RSVPs and we haven't reached that total, continue collecting
+      shouldAddAnother = completedGuests.length < partyTotalExpected && !isDeclining();
+    } else {
+      // fallback to the explicit 'add-another-person' radio when party total is 1
+      shouldAddAnother = steps[currentStep] !== declineStep && addAnother && addAnother.value.toLowerCase() === 'yes';
+    }
+
+    // set leader name if first guest
     if (!partyLeaderName) partyLeaderName = completedGuests[0] && completedGuests[0].name ? completedGuests[0].name : '';
 
     // If user wants to add another and we haven't reached the expected total, submit this guest now
@@ -211,13 +259,13 @@
       // submit current guest in background with party metadata
       try {
         submitButton.disabled = true;
-        submitButton.textContent = 'Sending…';
+        submitButton.textContent = 'Stuur…';
         await submitGuestToNetlify(guest, completedGuests.length);
       } catch (err) {
         // rollback and show error
         completedGuests.pop();
         submitButton.disabled = false;
-        submitButton.textContent = 'Send RSVP';
+        submitButton.textContent = 'Stuur RSVP';
         formError.textContent = 'Ons kon nie jou RSVP stuur nie. Probeer asseblief weer.';
         console.error(err);
         return;
@@ -260,7 +308,7 @@
     });
 
     submitButton.disabled = true;
-    submitButton.textContent = 'Sending…';
+    submitButton.textContent = 'Stuur…';
 
     try {
       const response = await fetch('/', {
@@ -274,7 +322,7 @@
     } catch (error) {
       completedGuests.pop();
       submitButton.disabled = false;
-      submitButton.textContent = 'Send RSVP';
+      submitButton.textContent = 'Stuur RSVP';
       formError.textContent = 'Ons kon nie jou RSVP stuur nie. Probeer asseblief weer.';
       console.error(error);
     }
