@@ -85,7 +85,7 @@
         if (legend) legend.textContent = 'Voltooi RSVP?';
       }
     }
-    progressLabel.textContent = `Gas ${completedGuests.length + 1} · Vraag ${routeIndex + 1} of ${route.length}`;
+    progressLabel.textContent = `Gas ${completedGuests.length + 1} · Vraag ${routeIndex + 1} van ${route.length}`;
     progressBar.style.width = `${((routeIndex + 1) / route.length) * 100}%`;
     formError.textContent = '';
 
