@@ -333,4 +333,49 @@
   });
 
   updateStep();
+
+  // Setup increment/decrement controls for number inputs (party size)
+  function setupNumberControls() {
+    const wrapper = form.querySelector('.number-input');
+    if (!wrapper) return;
+    const input = wrapper.querySelector('input[type="number"]');
+    const dec = wrapper.querySelector('.number-decrement');
+    const inc = wrapper.querySelector('.number-increment');
+    if (!input || !dec || !inc) return;
+
+    function clampAndEmit() {
+      const min = parseInt(input.getAttribute('min') || '1', 10);
+      const max = parseInt(input.getAttribute('max') || '999', 10);
+      let v = parseInt(input.value, 10);
+      if (Number.isNaN(v)) v = min;
+      v = Math.max(min, Math.min(max, v));
+      input.value = v;
+      // dispatch input event so other logic (validation/step routing) responds
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    dec.addEventListener('click', () => {
+      const step = parseInt(input.getAttribute('step') || '1', 10);
+      input.value = String((parseInt(input.value || '0', 10) || 0) - step);
+      clampAndEmit();
+    });
+
+    inc.addEventListener('click', () => {
+      const step = parseInt(input.getAttribute('step') || '1', 10);
+      input.value = String((parseInt(input.value || '0', 10) || 0) + step);
+      clampAndEmit();
+    });
+
+    // ensure manual typing clamps value too
+    input.addEventListener('blur', clampAndEmit);
+    input.addEventListener('keydown', (e) => {
+      // allow arrow keys to increment/decrement
+      if (e.key === 'ArrowUp') { e.preventDefault(); inc.click(); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); dec.click(); }
+    });
+  }
+
+  // initialize controls once DOM is ready
+  setupNumberControls();
 })();

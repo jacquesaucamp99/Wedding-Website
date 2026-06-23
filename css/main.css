@@ -231,7 +231,7 @@ h1, h2, h3, h4 {
 }
 
 .hashtag.greyed-out {
-  opacity: 0.4;
+  opacity: 0.6;
   color: rgba(255, 255, 255, 0.5);
 }
 
@@ -545,6 +545,20 @@ h1, h2, h3, h4 {
   .timeline .event:nth-child(odd), .timeline .event:nth-child(even) { left: 0; }
   .timeline .event:after { left: 8px; }
   .timeline .event .event-body { max-width: 100%; }
+}
+
+/* Schedule note: not a timeline entry — present as a simple callout */
+#schedule .timeline-item.note .timeline:before { display: none; }
+#schedule .timeline-item.note .timeline .event { width: 100%; left: 0; padding-left: 0; padding-right: 0; text-align: left; }
+#schedule .timeline-item.note .timeline .event:after { display: none; }
+#schedule .timeline-item.note .timeline .event .event-body {
+  display: block;
+  max-width: 100%;
+  padding: 18px 16px;
+  background: rgba(255, 255, 250, 0.06);
+  border-left: none;
+  border-radius: 10px;
+  box-shadow: none;
 }
 
 /* Mobile: stack hashtags vertically and place countdown to the right of each hashtag */
@@ -873,6 +887,7 @@ footer {
 
 .rsvp-step input[type='text'],
 .rsvp-step input[type='email'],
+.rsvp-step input[type='number'],
 .rsvp-step select,
 .rsvp-step textarea {
   width: 100%;
@@ -886,6 +901,62 @@ footer {
   font: inherit;
   font-size: 1.05rem;
   transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+/* Hide native number input controls but keep accessibility (visual custom appearance) */
+.rsvp-step input[type='number']::-webkit-outer-spin-button,
+.rsvp-step input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.rsvp-step input[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
+  appearance: textfield;
+}
+
+/* Give number inputs a slightly tighter visual width for the value while keeping full-width layout */
+.rsvp-step input[type='number'] { padding-right: 10px; }
+
+/* Number input with custom +/- controls */
+.number-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.number-input input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  height: 48px;
+  padding: 12px 14px;
+  min-width: 84px;
+  text-align: center;
+  border-radius: 12px;
+  border: 1px solid rgba(78,58,47,0.14);
+  background: rgba(255,255,250,0.9);
+  font-size: 1.05rem;
+}
+.number-input button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(78,58,47,0.14);
+  background: white;
+  color: var(--deep);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+}
+.number-input button:hover { transform: translateY(-2px); background: rgba(244,232,216,0.9); }
+.number-input button:active { transform: translateY(0); }
+
+@media (max-width: 760px) {
+  .number-input { gap: 6px; }
+  .number-input input[type="number"] { min-width: 72px; height: 44px; }
+  .number-input button { width: 36px; height: 36px; }
 }
 
 .rsvp-step textarea {

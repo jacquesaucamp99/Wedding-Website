@@ -77,9 +77,13 @@
 
                 <div class="rsvp-step" data-step data-party-size-step>
                     <p class="question-number">Groep grootte</p>
-                    <label for="partyTotal">Hoeveel mense in jou groep (insluitend jy)?</label>
-                    <p class="question-help">Voeg asseblief die totale aantal mense wat jy vir wil RSVP.</p>
-                    <input id="partyTotal" name="party-total" type="number" min="1" max="20" value="1" required>
+                    <label for="partyTotal">Vir hoeveel mense wil jy RSVP (insluitend jy)?</label>
+                    <p class="question-help">Kies asseblief die totale aantal mense waarvoor jy vir wil RSVP soos per jou uitnodig.</p>
+                                        <div class="number-input">
+                                            <button type="button" class="number-decrement" aria-label="Verminder aantal">−</button>
+                                            <input id="partyTotal" name="party-total" type="number" min="1" max="20" value="1" required>
+                                            <button type="button" class="number-increment" aria-label="Verhoog aantal">+</button>
+                                        </div>
                 </div>
 
                 <div class="rsvp-step" data-step data-attending-step>
@@ -90,7 +94,7 @@
 
                 <div class="rsvp-step" data-step data-attending-step>
                     <label for="transport">Shuttle diens</label>
-                    <p class="question-help">Indien daar n shuttle-service is vanaf die lughawe na die venue (en terug), sal julle daarvan wil gebruik maak? Indien daar genoeg belangstelling is, sal verdere reelings getref word met julle as julle "Ja" kies.</p>
+                    <p class="question-help">Indien daar n shuttle-service is vanaf die lughawe na die venue (en terug), sal julle daarvan wil gebruik maak? Indien daar genoeg belangstelling is, sal verdere reëlings getref word met julle as julle "Ja" kies.</p>
                     <select id="transport" name="transport" required>
                         <option value="" selected disabled>Kies 'n opsie</option>
                         <option value="Yes">Ja, asseblief</option>
